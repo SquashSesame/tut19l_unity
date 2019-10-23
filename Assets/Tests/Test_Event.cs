@@ -14,6 +14,12 @@ namespace Tests {
         event HogeFunc onHogeListner;
         event HogeFunc onHoge2Listner;
 
+        List<HogeFunc> _list = new List<HogeFunc> ();
+        event HogeFunc onHoge3Listner {
+            add { _list.Add (value); }
+            remove { _list.Remove (value); }
+        }
+
         void func00 (ref int count)
         {
             count++;
@@ -35,8 +41,8 @@ namespace Tests {
             onHogeListner += func01;
 
             // event を実行
-            onHogeListner (ref count);              //← イベント実行
-            //onHogeListner.Invoke (ref count);     //← イベント実行
+            //onHogeListner (ref count);              //← イベント実行
+            onHogeListner.Invoke (ref count);     //← イベント実行
 
             Assert.AreEqual (count, 2);
         }
@@ -68,6 +74,8 @@ namespace Tests {
          *  UnityEvent
          */
         UnityEngine.Events.UnityEvent onUnityListener = new UnityEngine.Events.UnityEvent ();
+
+        UnityEngine.Events.UnityAction onUnityAction;
 
         [Test]
         public void Test_Event_Func02 ()

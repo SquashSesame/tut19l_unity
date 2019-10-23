@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 public class TestCoroutine : MonoBehaviour
 {
@@ -26,8 +27,15 @@ public class TestCoroutine : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        int [] tbl = { 0, 1, 2, 3, 9, 9, 7 };
+
+        tbl.
+
+
         StartCoroutine (
-            CoroutineFunc00 (() => { Debug.Log ("終了通知"); })
+            CoroutineFunc00 (() => {
+                Debug.Log ("終了通知");
+            })
         );
         Debug.Log ("次の処理");
     }

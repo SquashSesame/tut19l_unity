@@ -42,6 +42,7 @@ namespace Tests
                 ASyncFunc00 (() => {
                     // 終了処理
                     isEnd = true;
+                    Debug.Log ("終了通知");
                 })
             );
             Debug.Log ("次の処理");
