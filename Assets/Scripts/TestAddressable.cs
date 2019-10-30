@@ -2,14 +2,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
-using UnityEngine.UI;
 
 public class TestAddressable : MonoBehaviour
 {
-    [SerializeField]
-    AssetReference assetRefImage;
-
-
+    [SerializeField]　AssetReference assetRefImage;
 
     // Start is called before the first frame update
     void Start()
@@ -24,11 +20,5 @@ public class TestAddressable : MonoBehaviour
                 sprite.sprite = op.Result;
             };
         }
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
     }
 }
