@@ -1,0 +1,37 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: Packed Assets
+  m_EditorClassIdentifier: 
+  m_GroupName: Packed Assets
+  m_Data:
+    m_SerializedData: []
+  m_GUID: 7d8e0443969a6454685a7799d5b5399d
+  m_SerializeEntries:
+  - m_GUID: 4b842e5821eec4e22b059eb6fa63bf75
+    m_Address: Assets/Data/goto.jpg
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: a616d71ac5a24445f9d8b558c6b57f4b
+    m_Address: Assets/Data/mikami.jpg
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: f9e3c73b9b26f4474a19e978242e243b
+    m_Address: Assets/Data/pic02.jpg
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: 7b1ddaa8b004c41aeb495da97e218eec, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: 6cb7177e982754720a6790bfb475f64e, type: 2}
+    - {fileID: 11400000, guid: 93c24cc829838499bae119d27228b442, type: 2}
