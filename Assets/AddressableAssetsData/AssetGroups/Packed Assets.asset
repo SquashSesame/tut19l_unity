@@ -15,7 +15,7 @@ MonoBehaviour:
   m_GroupName: Packed Assets
   m_Data:
     m_SerializedData: []
-  m_GUID: 7d8e0443969a6454685a7799d5b5399d
+  m_GUID: a261acc4152bd4883b7757628e417003
   m_SerializeEntries:
   - m_GUID: 4b842e5821eec4e22b059eb6fa63bf75
     m_Address: Assets/Data/goto.jpg
@@ -33,5 +33,5 @@ MonoBehaviour:
   m_Settings: {fileID: 11400000, guid: 7b1ddaa8b004c41aeb495da97e218eec, type: 2}
   m_SchemaSet:
     m_Schemas:
-    - {fileID: 11400000, guid: 6cb7177e982754720a6790bfb475f64e, type: 2}
-    - {fileID: 11400000, guid: 93c24cc829838499bae119d27228b442, type: 2}
+    - {fileID: 11400000, guid: 9748a7a9a9b0e4ae69901d90d5796cd9, type: 2}
+    - {fileID: 11400000, guid: 6007780dab4c84762a8c1697a6754968, type: 2}
