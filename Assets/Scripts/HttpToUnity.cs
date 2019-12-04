@@ -27,8 +27,8 @@ public class HttpToUnity : MonoBehaviour
     HttpListener httpListener;
     void Start ()
     {
-        _requestHandlers [new System.Text.RegularExpressions.Regex (
-            @"^/log")] = Cmd_log;
+        _requestHandlers [new System.Text.RegularExpressions.Regex (@"^/log")] = Cmd_log;
+        _requestHandlers [new System.Text.RegularExpressions.Regex (@"^/hoge")] = Cmd_hoge;
 
         // サーバー起動
         StartCoroutine (ServerMain ());
@@ -91,9 +91,28 @@ public class HttpToUnity : MonoBehaviour
         }
     }
 
-    // Update is called once per frame
-    void Update()
+    void Cmd_log(string url, System.Text.RegularExpressions.Match m, HttpListenerResponse response)
     {
-        
+        using (var output = response.OutputStream)
+        {
+            using (var writer = new System.IO.StreamWriter (output))
+            {
+                writer.Write ("LOG : " + url);
+            }
+            output.Close ();
+        }
     }
+
+    void Cmd_hoge(string url, System.Text.RegularExpressions.Match m, HttpListenerResponse response)
+    {
+        using (var output = response.OutputStream)
+        {
+            using (var writer = new System.IO.StreamWriter (output))
+            {
+                writer.Write ("HOGE : " + url);
+            }
+            output.Close ();
+        }
+    }
+
 }
