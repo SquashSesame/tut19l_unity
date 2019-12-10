@@ -2,33 +2,37 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Net;
-using System.Runtime.Serialization;
-using System.Runtime.Serialization.Json;
 using UnityEngine;
+using System.IO;
+using System.Text.RegularExpressions;
 
 public class HttpToUnity : MonoBehaviour
 {
-
-    public IPAddress IPAddress;
-    public string IPAddressString = "localhost";
-    public int Port = 5000;
+    public string ServerURL = "http://*:5000/";
     public bool isStop = false;
-    const string pathSeparater = "/";
-    const float TIMEOUT_TIME = 5.0f;
+
+    [SerializeField] UnityEngine.UI.Text Message;
+    [SerializeField] UnityEngine.UI.Button btnStopServer;
 
     public delegate void RequestHandler (
         string rawUrl,
-        System.Text.RegularExpressions.Match match,
         HttpListenerResponse response);
 
-    private Dictionary<System.Text.RegularExpressions.Regex, RequestHandler>
-        _requestHandlers = new Dictionary<System.Text.RegularExpressions.Regex, RequestHandler> ();
+    private Dictionary<Regex, RequestHandler>
+        _commandList = new Dictionary<Regex, RequestHandler> ();
 
     HttpListener httpListener;
+    
     void Start ()
     {
-        _requestHandlers [new System.Text.RegularExpressions.Regex (@"^/log")] = Cmd_log;
-        _requestHandlers [new System.Text.RegularExpressions.Regex (@"^/hoge")] = Cmd_hoge;
+        Message.text = string.Empty;
+        btnStopServer.onClick.AddListener(()=>{
+            isStop = true;
+        });
+
+        // 処理をするコマンドを追加
+        _commandList [new Regex (@"^/log")] = Cmd_log;
+        _commandList [new Regex (@"^/hoge")] = Cmd_hoge;
 
         // サーバー起動
         StartCoroutine (ServerMain ());
@@ -40,8 +44,8 @@ public class HttpToUnity : MonoBehaviour
     IEnumerator ServerMain ()
     {
         httpListener = new HttpListener ();
-        httpListener.Prefixes.Add (
-            "http://" + IPAddressString + ":" + Port + pathSeparater);
+        httpListener.Prefixes.Add (ServerURL);
+        MessageLog("サーバー開始");
         httpListener.Start ();
 
         while (isStop == false)
@@ -52,6 +56,7 @@ public class HttpToUnity : MonoBehaviour
         }
 
         httpListener.Stop ();
+        MessageLog("サーバー停止");
         httpListener = null;
         yield return null;
     }
@@ -66,53 +71,51 @@ public class HttpToUnity : MonoBehaviour
         var request = context.Request;
         using (var response = context.Response)
         {
-            foreach (System.Text.RegularExpressions.Regex r in _requestHandlers.Keys)
+            foreach (Regex r in _commandList.Keys)
             {
-                System.Text.RegularExpressions.Match m = r.Match (request.Url.AbsolutePath);
+                // 登録されているコマンドを正規表現を使って検索
+                Match m = r.Match (request.Url.AbsolutePath);
                 if (m.Success)
                 {
                     // 該当のコマンドを実行
-                    (_requestHandlers [r]) (request.RawUrl, m, response);
+                    (_commandList [r]) (request.RawUrl, response);
                     return;
                 }
             }
 
-            // ERROR
-            Debug.LogWarning ("ERROR : " + request.Url.ToString ());
+            // ERROR（登録されているコマンドがないとき）
             response.StatusCode = 404;
-            using (var output = response.OutputStream)
-            {
-                using (var writer = new System.IO.StreamWriter (output))
-                {
-                    writer.Write ("ERROR\n");
-                }
-                output.Close ();
-            }
+            WriteResponse(response.OutputStream, "ERROR : No Command " + request.RawUrl);
         }
     }
 
-    void Cmd_log(string url, System.Text.RegularExpressions.Match m, HttpListenerResponse response)
+    void WriteResponse(Stream output, string responseMsg)
     {
-        using (var output = response.OutputStream)
+        MessageLog(responseMsg);
+        using (var writer = new StreamWriter (output))
         {
-            using (var writer = new System.IO.StreamWriter (output))
-            {
-                writer.Write ("LOG : " + url);
-            }
-            output.Close ();
+            writer.Write (responseMsg);
         }
+        output.Close ();
     }
 
-    void Cmd_hoge(string url, System.Text.RegularExpressions.Match m, HttpListenerResponse response)
+    void MessageLog(string msg)
     {
-        using (var output = response.OutputStream)
-        {
-            using (var writer = new System.IO.StreamWriter (output))
-            {
-                writer.Write ("HOGE : " + url);
-            }
-            output.Close ();
-        }
+        Debug.Log(msg);
+        Message.text = msg;
+    }
+
+
+    void Cmd_log(string url, HttpListenerResponse response)
+    {
+        // とりあえず、入力されてURLをレスポンスで返すのみ
+        WriteResponse(response.OutputStream, "LOG : " + url);
+    }
+
+    void Cmd_hoge(string url, HttpListenerResponse response)
+    {
+        // とりあえず、入力されてURLをレスポンスで返すのみ
+        WriteResponse(response.OutputStream, "HOGE : " + url);
     }
 
 }
