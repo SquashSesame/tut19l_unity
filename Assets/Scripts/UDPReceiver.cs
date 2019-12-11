@@ -87,14 +87,17 @@ public class UDPReceiver : MonoBehaviour
     void OnGUI()
     {
         GUIStyle myStyle = new GUIStyle(GUI.skin.textArea);
-        myStyle.fontSize = 30;
+        myStyle.fontSize = 20;
 
         int posY = 10;
         if (adrList != null && adrList.Length > 0){
-            GUI.Label(new Rect(10,posY, 600, 100), "HOST IP : " + adrList[0].ToString(), myStyle);
-            posY += 40;
+            //for(int i=0; i<adrList.Length; ++i)
+            {
+                GUI.Label(new Rect(10,posY, 300, 100), "HOST IP : " + adrList[0].ToString(), myStyle);
+                posY += 40;
+            }
         }
-        GUI.Label(new Rect(10, posY, 600, 100), "HOST Port : " + HostPort.ToString(), myStyle);
+        GUI.Label(new Rect(10, posY, 300, 100), "HOST Port : " + HostPort.ToString(), myStyle);
         posY += 40;
     }
 }
