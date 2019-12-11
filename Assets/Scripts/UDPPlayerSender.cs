@@ -23,7 +23,7 @@ public class UDPPlayerSender : MonoBehaviour
         btnConnect.onClick.AddListener(()=>{
             // UDP -> Host へ接続
             myClient = new UdpClient();
-            myClient.Connect(HostIP, HostPort);
+            myClient.Connect(HostIP, HostPort);            
         });
     }
 
@@ -70,6 +70,7 @@ public class UDPPlayerSender : MonoBehaviour
             // BOXの名前と、ポジションを送信
             Vec2Byte(RefObject.name, ref pos, sendBytes);
             myClient.Send(sendBytes, sendBytes.Length);
+            Debug.Log("SEND : " + RefObject.name );
         }
     }
 

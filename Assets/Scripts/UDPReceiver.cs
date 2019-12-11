@@ -53,6 +53,7 @@ public class UDPReceiver : MonoBehaviour
 
             // 受信データを取得
             string refObjName = Byte2Vec(receiveBytes, ref receiveVec3);
+            Debug.Log("RECEIVE : " + refObjName );
 
             // 参照するオブジェクトを検索
             var findObj = GameObject.Find(refObjName);
