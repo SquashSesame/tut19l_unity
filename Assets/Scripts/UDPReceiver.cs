@@ -81,7 +81,7 @@ public class UDPReceiver : MonoBehaviour
         pos.y = System.BitConverter.ToSingle(bytes, 20);
         pos.z = System.BitConverter.ToSingle(bytes, 24);
 
-        return name
+        return name;
     }
 
     void OnGUI()
