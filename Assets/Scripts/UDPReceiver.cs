@@ -11,13 +11,29 @@ public class UDPReceiver : MonoBehaviour
 
     UdpClient hostClient;
 
-    byte[] receiveBytes = new byte[32];
-    Vector3 receiveVec3 = new Vector3();
-
+    // スレッド用
     Thread receiveThread;
     bool isHostStop = false;
 
+    // IPアドレス一覧
     IPAddress[] adrList;
+
+    // 受け取るパケットのデータ
+    struct sPacket {
+        public string  objName;
+        public float   px;
+        public float   py;
+        public float   pz;
+
+        public sPacket(string name, float x, float y, float z){
+            this.objName = name;
+            this.px = x;
+            this.py = y;
+            this.pz = z;
+        }
+    };
+    // 受け取るパケットのキュー
+    Queue<sPacket> packetQueue = new Queue<sPacket>();
 
     // Start is called before the first frame update
     void Start()
@@ -30,6 +46,7 @@ public class UDPReceiver : MonoBehaviour
         hostClient = new UdpClient(HostPort);
         hostClient.Client.ReceiveTimeout = 1000;
         receiveThread = new Thread(new ThreadStart(ReceiveMain));
+        receiveThread.Start();
     }
 
     void OnApplicationQuit()
@@ -37,37 +54,51 @@ public class UDPReceiver : MonoBehaviour
         if (receiveThread != null){
             isHostStop = true;
             Thread.Sleep(1);
+            try {
+                receiveThread.Interrupt();
+                receiveThread.Abort();
+            }
+            catch {}
+            receiveThread = null;
         }
 
         if (hostClient != null){
             hostClient.Close();
+            hostClient = null;
         }
     }
 
+    // 通信スレッド
     void ReceiveMain()
     {
+        IPEndPoint remoteEP = null;
         while (isHostStop == false)
         {
-            IPEndPoint remoteEP = null;
-            receiveBytes = hostClient.Receive(ref remoteEP);
+            Thread.Sleep(1);
 
-            // 受信データを取得
-            string refObjName = Byte2Vec(receiveBytes, ref receiveVec3);
-            Debug.Log("RECEIVE : " + refObjName );
-
-            // 参照するオブジェクトを検索
-            var findObj = GameObject.Find(refObjName);
-            if (findObj != null){
-                // 見つかったオブジェクトへ位置を設定
-                findObj.transform.position = receiveVec3;
+            byte[] receiveBytes;
+            try {
+                receiveBytes = hostClient.Receive(ref remoteEP);
+            }
+            catch {
+                continue;
             }
 
-            Thread.Sleep(1);
+            // 受信データを取得
+            try {
+                // パケットデータを取得して、キューに積む（細かい処理はメインスレッドでやる）
+                var packet = Bytes2Packet(receiveBytes);
+                packetQueue.Enqueue(packet);
+                Debug.Log("RECEIVE : " + packet.objName );
+            }
+            catch(System.Exception ex) {
+                Debug.LogWarning("ERROR: " + ex.Message);
+                continue;
+            }
         }
-        receiveThread = null;
     }
 
-    string Byte2Vec(byte[] bytes, ref Vector3 pos)
+    sPacket Bytes2Packet(byte[] bytes)
     {
         /*
             バイト配列のフォーッマット
@@ -76,13 +107,35 @@ public class UDPReceiver : MonoBehaviour
             byte [4]    pox.y
             byte [4]    pox.z
         */
-        name = System.Text.Encoding.ASCII.GetString(bytes);
+        return new sPacket(
+            System.Text.Encoding.ASCII.GetString(bytes),
+            System.BitConverter.ToSingle(bytes, 16),
+            System.BitConverter.ToSingle(bytes, 20),
+            System.BitConverter.ToSingle(bytes, 24)
+        );
+    }
 
-        pos.x = System.BitConverter.ToSingle(bytes, 16);
-        pos.y = System.BitConverter.ToSingle(bytes, 20);
-        pos.z = System.BitConverter.ToSingle(bytes, 24);
+    void Update()
+    {
+        // 受け取ったパケットをメインスレッド側で処理
+        if (packetQueue.Count > 0)
+        {
+            do {
+                // キューから取り出す
+                var packet = packetQueue.Dequeue();
+                
+                // 参照するオブジェクトを検索
+                var findObj = GameObject.Find(packet.objName);
+                if (findObj != null){
+                    // 見つかったオブジェクトへ位置を設定
+                    findObj.transform.position = new Vector3(packet.px, packet.py, packet.pz);
+                } else {
+                    Debug.LogWarning("WARN: オブジェクトが見つかりません " + packet.objName);
+                }
+            }
+            while (packetQueue.Count > 0);
+        }
 
-        return name;
     }
 
     void OnGUI()

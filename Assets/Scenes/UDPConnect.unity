@@ -151,7 +151,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   btnConnect: {fileID: 1861767277}
   RefObject: {fileID: 1167434396}
-  HostIP: 10.204.130.50
+  HostIP: 169.254.172.20
   HostPort: 6000
 --- !u!4 &553433100
 Transform:
@@ -539,7 +539,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 13f395f1f9c814fb687a9712f7494f47, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  HostPort: 6000
+  HostPort: 6001
 --- !u!4 &1168229508
 Transform:
   m_ObjectHideFlags: 0
