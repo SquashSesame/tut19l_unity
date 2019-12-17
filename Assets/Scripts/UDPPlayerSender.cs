@@ -20,7 +20,15 @@ public class UDPPlayerSender : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        var bText = btnConnect.GetComponentInChildren<UnityEngine.UI.Text>() as UnityEngine.UI.Text;
+        bText.text = "Connect to " + HostIP + ":" + HostPort.ToString();
+
         btnConnect.onClick.AddListener(()=>{
+
+            if (myClient != null){
+                myClient.Close();
+                myClient = null;
+            }
             // UDP -> Host へ接続
             myClient = new UdpClient();
             myClient.Connect(HostIP, HostPort);            
@@ -31,6 +39,7 @@ public class UDPPlayerSender : MonoBehaviour
     {
         if (myClient != null){
             myClient.Close();
+            myClient = null;
         }
     }
 
